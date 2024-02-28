@@ -18,7 +18,7 @@ export class WebhooksService {
   }
 
   async handleStripeUpdate(stripeSignature: string, payload: any) {
-    const { type, data } = await this.stripe.webhooks.constructEventAsync(
+    const { type } = await this.stripe.webhooks.constructEventAsync(
       payload,
       stripeSignature,
       this.stripeConfig.customerWebhookSecret,

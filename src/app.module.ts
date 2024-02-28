@@ -1,6 +1,21 @@
-import configuration from '@app/app.config';
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { AllExceptionsFilter } from '@app/all-exceptions.filter';
+import configuration, {
+  CacheConfig,
+  StripeConfig,
+  cache_config,
+} from '@app/app.config';
+import { AppLoggerMiddleware } from '@app/middlewares/app-logger.middleware';
+import { StripeModule } from '@app/stripe/stripe.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import {
+  MiddlewareConsumer,
+  Module,
+  UnprocessableEntityException,
+  ValidationError,
+  ValidationPipe,
+} from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { WebhooksModule } from './webhooks/webhooks.module';
 @Module({
   imports: [
@@ -9,7 +24,73 @@ import { WebhooksModule } from './webhooks/webhooks.module';
       envFilePath: ['.env', '.env.local'],
       load: [configuration],
     }),
+    CacheModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        const cacheConfig = configService.get<CacheConfig>(cache_config);
+        return {
+          ttl: Number(cacheConfig.ttl) || 60 * 1000, // Milliseconds
+          max: Number(cacheConfig.maxItems) || 100,
+        };
+      },
+      isGlobal: true,
+    }),
+    StripeModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const { secretKey } = configService.get<StripeConfig>('stripe');
+        return {
+          secretKey,
+          stripeConfig: {
+            apiVersion: '2023-10-16',
+          },
+        };
+      },
+    }),
     WebhooksModule,
   ],
+  providers: [
+    {
+      provide: APP_PIPE,
+      useValue: new ValidationPipe({
+        transform: true,
+        exceptionFactory: (errors) => {
+          const formattedErrors = formatErrors(errors);
+          return new UnprocessableEntityException(formattedErrors);
+        },
+      }),
+    },
+    {
+      provide: APP_FILTER,
+      useValue: new AllExceptionsFilter(),
+    },
+  ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(AppLoggerMiddleware).forRoutes('*');
+  }
+}
+
+const formatErrors = (errors: ValidationError[], parentName = '') => {
+  const formattedErrors = [];
+
+  for (const error of errors) {
+    if (Array.isArray(error.value) && !error.constraints) {
+      formattedErrors.push(formatErrors(error.children, error.property));
+    } else if (Array.isArray(error.children) && error.children.length) {
+      const ob = { name: `${parentName}.${error.property}`, errors: [] };
+      ob.errors = formatErrors(error.children);
+      formattedErrors.push(ob);
+    } else {
+      const err = {};
+      err[error.property] = Object.keys(error.constraints).map(
+        (p) => error.constraints[p],
+      );
+      formattedErrors.push(err);
+    }
+  }
+
+  return formattedErrors.flat();
+};
