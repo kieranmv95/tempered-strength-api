@@ -5,6 +5,7 @@ import configuration, {
   cache_config,
 } from '@app/app.config';
 import { AuthModule } from '@app/auth/auth.module';
+import { JwtGuard } from '@app/auth/guards/jwt.guard';
 import { AppLoggerMiddleware } from '@app/middlewares/app-logger.middleware';
 import { StripeModule } from '@app/stripe/stripe.module';
 import { WebhooksModule } from '@app/webhooks/webhooks.module';
@@ -17,7 +18,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_FILTER, APP_PIPE } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -66,6 +67,10 @@ import { APP_FILTER, APP_PIPE } from '@nestjs/core';
     {
       provide: APP_FILTER,
       useValue: new AllExceptionsFilter(),
+    },
+    {
+      provide: APP_GUARD,
+      useClass: JwtGuard,
     },
   ],
 })

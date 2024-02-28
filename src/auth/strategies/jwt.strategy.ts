@@ -1,38 +1,33 @@
-import { JwtConfig } from '@app/app.config';
+import { JwtConfig, jwt_config } from '@app/app.config';
 import { LocalUser } from '@app/auth/dto/local-user';
 import { TokenPayload } from '@app/auth/dto/token-payload';
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
+import { passportJwtSecret } from 'jwks-rsa';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(configService: ConfigService) {
-    const { secret } = configService.get<JwtConfig>('jwt');
+    const { clerkIssuerUrl } = configService.get<JwtConfig>(jwt_config);
     super({
+      secretOrKeyProvider: passportJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri: `${clerkIssuerUrl}/.well-known/jwks.json`,
+      }),
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
-      secretOrKey: secret,
+      issuer: clerkIssuerUrl,
+      algorithms: ['RS256'],
     });
   }
 
   validate(payload: TokenPayload): LocalUser {
-    if (!payload.isVerified) {
-      throw new ForbiddenException('User not verified');
-    }
     return {
       id: payload.sub,
       username: payload.username,
-      roles: payload.roles,
-      isActivated: payload.isActivated,
-      isCompleted: payload.isCompleted,
-      isVerified: payload.isVerified,
-      isOnboarding: payload.isOnboarding,
-      permissions: payload.permissions,
-      loginProvider: payload.loginProvider,
-      loginOrigin: payload.loginOrigin,
-      schoolId: payload.schoolId,
     };
   }
 }

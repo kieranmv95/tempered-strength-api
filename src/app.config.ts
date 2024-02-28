@@ -6,12 +6,7 @@ export const cache_config = 'cache';
 
 export interface JwtConfig {
   secret: string;
-  expiration: string;
-  refreshTokenSecret: string;
-  refreshTokenExpiration: string;
-  resetPasswordTokenSecret: string;
-  resetPasswordTokenExpiration: string;
-  emailInvitationTokenExpiration: string;
+  clerkIssuerUrl: string;
 }
 
 export interface StripeConfig {
@@ -27,14 +22,7 @@ export interface CacheConfig {
 export default () => ({
   [jwt_config]: {
     secret: process.env.JWT_SECRET,
-    expiration: process.env.JWT_EXPIRATION || '60m',
-    refreshTokenSecret: process.env.JWT_REFRESH_TOKEN_SECRET,
-    refreshTokenExpiration: process.env.JWT_REFRESH_TOKEN_EXPIRATION || '15d',
-    resetPasswordTokenSecret: process.env.JWT_RESET_PASSWORD_TOKEN_SECRET,
-    resetPasswordTokenExpiration:
-      process.env.JWT_RESET_PASSWORD_TOKEN_EXPIRATION || '30m',
-    emailInvitationTokenExpiration:
-      process.env.JWT_EMAIL_INVITATION_TOKEN_EXPIRATION || '7d',
+    clerkIssuerUrl: process.env.JWT_CLERK_ISSUER_URL,
   },
   [stripe_config]: {
     secretKey: process.env.STRIPE_SECRET_KEY,

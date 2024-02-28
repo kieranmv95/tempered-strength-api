@@ -1,3 +1,4 @@
+import { AllowAnonymous } from '@app/auth/decorators/allow-anonymous.decorator';
 import { STRIPE_SIGNATURE } from '@app/stripe/stripe.module';
 import { WebhooksService } from '@app/webhooks/webhooks.service';
 import {
@@ -9,7 +10,10 @@ import {
   Post,
   Request,
 } from '@nestjs/common';
+import { ApiExcludeController } from '@nestjs/swagger';
 
+@ApiExcludeController()
+@AllowAnonymous()
 @Controller('webhooks')
 export class WebhooksController {
   constructor(private readonly webhooksService: WebhooksService) {}
