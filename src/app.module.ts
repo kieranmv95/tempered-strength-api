@@ -1,13 +1,16 @@
 import { AllExceptionsFilter } from '@app/all-exceptions.filter';
 import configuration, {
   CacheConfig,
+  DbConfig,
   StripeConfig,
   cache_config,
+  db_config,
 } from '@app/app.config';
 import { AuthModule } from '@app/auth/auth.module';
 import { JwtGuard } from '@app/auth/guards/jwt.guard';
 import { AppLoggerMiddleware } from '@app/middlewares/app-logger.middleware';
 import { StripeModule } from '@app/stripe/stripe.module';
+import { UsersModule } from '@app/users/users.module';
 import { WebhooksModule } from '@app/webhooks/webhooks.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import {
@@ -19,6 +22,7 @@ import {
 } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
+import { TypeOrmModule } from '@nestjs/typeorm';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -50,8 +54,30 @@ import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
         };
       },
     }),
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const dbConfig = configService.get<DbConfig>(db_config);
+        return {
+          type: 'mysql',
+          host: dbConfig.host,
+          username: dbConfig.username,
+          password: dbConfig.password,
+          database: dbConfig.database,
+          synchronize: true,
+          autoLoadEntities: true,
+          entities: [__dirname + '/**/*.entity{.ts,.js}'],
+          extra: {
+            ssl: {
+              rejectUnauthorized: false,
+            },
+          },
+        };
+      },
+    }),
     AuthModule,
     WebhooksModule,
+    UsersModule,
   ],
   providers: [
     {

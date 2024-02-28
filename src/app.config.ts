@@ -3,6 +3,7 @@ import * as process from 'process';
 export const jwt_config = 'jwt';
 export const stripe_config = 'stripe';
 export const cache_config = 'cache';
+export const db_config = 'db';
 
 export interface JwtConfig {
   secret: string;
@@ -19,6 +20,15 @@ export interface CacheConfig {
   maxItems: number;
 }
 
+export interface DbConfig {
+  host: string;
+  port: number;
+  username: string;
+  password: string;
+  database: string;
+  synchronize: boolean;
+}
+
 export default () => ({
   [jwt_config]: {
     secret: process.env.JWT_SECRET,
@@ -32,5 +42,12 @@ export default () => ({
   [cache_config]: {
     ttl: process.env.CACHE_TTL,
     maxItems: process.env.CACHE_MAX_ITEMS,
+  },
+  [db_config]: {
+    host: process.env.DATABASE_HOST,
+    port: parseInt(process.env.DATABASE_PORT) || 3306,
+    username: process.env.DATABASE_USERNAME,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_NAME,
   },
 });
