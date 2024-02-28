@@ -4,8 +4,10 @@ import configuration, {
   StripeConfig,
   cache_config,
 } from '@app/app.config';
+import { AuthModule } from '@app/auth/auth.module';
 import { AppLoggerMiddleware } from '@app/middlewares/app-logger.middleware';
 import { StripeModule } from '@app/stripe/stripe.module';
+import { WebhooksModule } from '@app/webhooks/webhooks.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import {
   MiddlewareConsumer,
@@ -16,7 +18,6 @@ import {
 } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_PIPE } from '@nestjs/core';
-import { WebhooksModule } from './webhooks/webhooks.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -48,6 +49,7 @@ import { WebhooksModule } from './webhooks/webhooks.module';
         };
       },
     }),
+    AuthModule,
     WebhooksModule,
   ],
   providers: [
