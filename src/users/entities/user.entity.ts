@@ -11,6 +11,6 @@ export class User {
   @Column()
   onboarding: boolean;
 
-  @Column()
+  @Column({ type: 'double' })
   weight: number;
 }
