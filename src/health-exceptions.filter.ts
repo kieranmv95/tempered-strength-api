@@ -1,4 +1,10 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 
 @Catch()
 export class HealthExceptionsFilter implements ExceptionFilter {
@@ -6,7 +12,10 @@ export class HealthExceptionsFilter implements ExceptionFilter {
     const environment = process.env.NODE_ENV ?? 'undefined';
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
-    const exceptionResponse = { environment, ...(exception.getResponse() as object) };
+    const exceptionResponse = {
+      environment,
+      ...(exception.getResponse() as object),
+    };
     response.status(HttpStatus.OK).json(exceptionResponse);
   }
 }

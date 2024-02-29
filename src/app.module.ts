@@ -84,7 +84,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       provide: APP_PIPE,
       useValue: new ValidationPipe({
         transform: true,
-        exceptionFactory: (errors) => {
+        exceptionFactory: errors => {
           const formattedErrors = formatErrors(errors);
           return new UnprocessableEntityException(formattedErrors);
         },
@@ -119,7 +119,7 @@ const formatErrors = (errors: ValidationError[], parentName = '') => {
     } else {
       const err = {};
       err[error.property] = Object.keys(error.constraints).map(
-        (p) => error.constraints[p],
+        p => error.constraints[p],
       );
       formattedErrors.push(err);
     }

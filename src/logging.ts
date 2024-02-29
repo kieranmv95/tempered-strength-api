@@ -16,7 +16,7 @@ export const transports = {
           error: 'red',
         },
       }),
-      winston.format.printf((info) => {
+      winston.format.printf(info => {
         return `${info.timestamp} [${info.level}] [${info.context ? info.context : info.stack}] ${info.message} ${
           info.stack ? info.stack : ''
         }}`;
