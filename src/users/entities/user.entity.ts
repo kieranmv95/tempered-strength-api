@@ -1,16 +1,16 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
 export class User {
-  @Column()
+  @PrimaryColumn({ type: 'varchar', length: 255 })
   id: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 255, unique: true })
   username: string;
 
-  @Column()
+  @Column({ type: 'tinyint', width: 1 })
   onboarding: boolean;
 
-  @Column({ type: 'double' })
-  weight: number;
+  @Column({ type: 'decimal', precision: 5, scale: 1, nullable: true })
+  weight?: number;
 }

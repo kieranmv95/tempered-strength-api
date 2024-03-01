@@ -1,16 +1,25 @@
-import { AllowAnonymous } from '@app/auth/decorators/allow-anonymous.decorator';
+import { LocalUser } from '@app/auth/dto/local-user';
 import { UsersService } from '@app/users/users.service';
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Request } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-@AllowAnonymous()
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  findAll() {
+  async getUser(@Request() { user: { id } }: { user: LocalUser }) {
+    return this.usersService.getById(id);
+  }
+
+  @Get(':id')
+  async getUserById(id: string) {
+    return this.usersService.getById(id);
+  }
+
+  @Get('all')
+  async getAllUsers() {
     return this.usersService.findAll();
   }
 }
