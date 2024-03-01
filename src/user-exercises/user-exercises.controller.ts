@@ -1,9 +1,22 @@
 import { LocalUser } from '@app/auth/dto/local-user';
+import { CreateUserExerciseDto } from '@app/user-exercises/dtos/create-user-exercise.dto';
+import { UpdateUserExerciseDto } from '@app/user-exercises/dtos/update-user-exercise.dto';
 import { UserExercise } from '@app/user-exercises/entities/user-exercise.entity';
 import { UserExercisesService } from '@app/user-exercises/user-exercises.service';
-import { Controller, Get, Request } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Request,
+} from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @ApiTags('UserExercises')
 @Controller('user-exercises')
 export class UserExercisesController {
@@ -11,8 +24,40 @@ export class UserExercisesController {
 
   @Get()
   async getUserExercises(
-    @Request() { user: { id } }: { user: LocalUser },
+    @Request() { user: { id: userId } }: { user: LocalUser },
   ): Promise<UserExercise[]> {
-    return this.userExercisesService.getAllUserExercises(id);
+    return this.userExercisesService.getAllUserExercises(userId);
+  }
+
+  @Post()
+  async createUserExercise(
+    @Request() { user: { id: userId } }: { user: LocalUser },
+    @Body() userExercise: CreateUserExerciseDto,
+  ): Promise<UserExercise> {
+    return this.userExercisesService.createUserExercise({
+      ...userExercise,
+      userId,
+    });
+  }
+
+  @Patch(':id')
+  async updateUserExercise(
+    @Request() { user: { id: userId } }: { user: LocalUser },
+    @Param('id', ParseIntPipe) id: number,
+    @Body() userExercise: UpdateUserExerciseDto,
+  ) {
+    return this.userExercisesService.updateUserExercise(
+      userId,
+      id,
+      userExercise,
+    );
+  }
+
+  @Delete(':id')
+  async deleteUserExercise(
+    @Request() { user: { id: userId } }: { user: LocalUser },
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.userExercisesService.deleteUserExercise(userId, id);
   }
 }

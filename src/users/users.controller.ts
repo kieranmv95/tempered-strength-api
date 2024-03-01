@@ -1,8 +1,9 @@
 import { LocalUser } from '@app/auth/dto/local-user';
 import { UsersService } from '@app/users/users.service';
 import { Controller, Get, Request } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
