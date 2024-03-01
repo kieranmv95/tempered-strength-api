@@ -13,4 +13,8 @@ export class UserExercisesService {
   async findAll(): Promise<UserExercise[]> {
     return this.userExercisesRepository.find();
   }
+
+  async getAllUserExercises(id: string): Promise<UserExercise[]> {
+    return this.userExercisesRepository.find({ where: { userId: id } });
+  }
 }
