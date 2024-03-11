@@ -1,19 +1,20 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
-@Entity({ name: 'teams' })
+@Schema({ timestamps: true, id: true })
 export class Team {
-  @PrimaryGeneratedColumn({ type: 'int' })
-  id: number;
-
-  @Column({ type: 'varchar', length: 255 })
+  @Prop({ required: true })
   name: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Prop({ required: true })
   description: string;
 
-  @Column({ type: 'varchar', length: 255 })
-  ownerUserId: string;
+  @Prop({ required: true })
+  userId: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Prop({ required: true })
   password: string;
 }
+
+export type TeamDocument = Team & Document;
+export const TeamSchema = SchemaFactory.createForClass(Team);

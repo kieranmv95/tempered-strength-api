@@ -1,19 +1,21 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Exercise } from '@app/exercises/entities/exercise.entity';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
-@Entity({ name: 'userExercises' })
+@Schema({ timestamps: true, id: true })
 export class UserExercise {
-  @PrimaryGeneratedColumn({ type: 'int' })
-  id: number;
-
-  @Column({ type: 'varchar', length: 255 })
+  @Prop({ required: true })
   userId: string;
 
-  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
+  @Prop({ required: true })
+  exercise: Exercise;
+
+  @Prop()
   log?: number;
 
-  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
-  date: Date;
-
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  duration?: string;
+  @Prop()
+  duration?: number;
 }
+
+export type UserExerciseDocument = UserExercise & Document;
+export const UserExerciseSchema = SchemaFactory.createForClass(UserExercise);

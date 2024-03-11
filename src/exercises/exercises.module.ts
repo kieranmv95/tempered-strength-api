@@ -1,11 +1,18 @@
-import { Exercise } from '@app/exercises/entities/exercise.entity';
+import {
+  Exercise,
+  ExerciseSchema,
+} from '@app/exercises/entities/exercise.entity';
+import { ExercisesController } from '@app/exercises/exercises.controller';
+import { ExercisesService } from '@app/exercises/exercises.service';
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ExercisesController } from './exercises.controller';
-import { ExercisesService } from './exercises.service';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Exercise])],
+  imports: [
+    MongooseModule.forFeature([
+      { name: Exercise.name, schema: ExerciseSchema },
+    ]),
+  ],
   controllers: [ExercisesController],
   providers: [ExercisesService],
 })

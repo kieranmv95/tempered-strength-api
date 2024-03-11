@@ -1,11 +1,18 @@
-import { UserTeam } from '@app/user-teams/entities/user-team.entity';
+import {
+  UserTeam,
+  UserTeamSchema,
+} from '@app/user-teams/entities/user-team.entity';
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { MongooseModule } from '@nestjs/mongoose';
 import { UserTeamsController } from './user-teams.controller';
 import { UserTeamsService } from './user-teams.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserTeam])],
+  imports: [
+    MongooseModule.forFeature([
+      { name: UserTeam.name, schema: UserTeamSchema },
+    ]),
+  ],
   controllers: [UserTeamsController],
   providers: [UserTeamsService],
 })

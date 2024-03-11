@@ -3,7 +3,7 @@ import * as process from 'process';
 export const jwt_config = 'jwt';
 export const stripe_config = 'stripe';
 export const cache_config = 'cache';
-export const db_config = 'db';
+export const mongodb_config = 'mongodb';
 
 export interface JwtConfig {
   secret: string;
@@ -20,13 +20,11 @@ export interface CacheConfig {
   maxItems: number;
 }
 
-export interface DbConfig {
-  host: string;
-  port: number;
+export interface MongoDbConfig {
   username: string;
   password: string;
-  database: string;
-  synchronize: boolean;
+  dbName: string;
+  uri: string;
 }
 
 export default () => ({
@@ -43,11 +41,10 @@ export default () => ({
     ttl: process.env.CACHE_TTL,
     maxItems: process.env.CACHE_MAX_ITEMS,
   },
-  [db_config]: {
-    host: process.env.DATABASE_HOST,
-    port: parseInt(process.env.DATABASE_PORT) || 3306,
-    username: process.env.DATABASE_USERNAME,
-    password: process.env.DATABASE_PASSWORD,
-    database: process.env.DATABASE_NAME,
+  [mongodb_config]: {
+    username: process.env.MONGO_USERNAME,
+    password: process.env.MONGO_PASSWORD,
+    dbName: process.env.MONGO_DB_NAME,
+    uri: process.env.MONGO_URI,
   },
 });
