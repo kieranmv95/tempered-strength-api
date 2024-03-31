@@ -1,18 +1,16 @@
-import {
-  UserTeam,
-  UserTeamDocument,
-} from '@app/user-teams/entities/user-team.entity';
+import { UserTeam } from '@app/user-teams/entities/user-team.entity';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserTeamsService {
   constructor(
-    @InjectModel(UserTeam.name) private userTeamModel: Model<UserTeamDocument>,
+    @InjectRepository(UserTeam)
+    private readonly userTeamsRepository: Repository<UserTeam>,
   ) {}
 
   async findAll(): Promise<UserTeam[]> {
-    return this.userTeamModel.find();
+    return this.userTeamsRepository.find();
   }
 }

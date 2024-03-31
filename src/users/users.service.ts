@@ -1,20 +1,20 @@
-import { User, UserDocument } from '@app/users/entities/user.entity';
+import { User } from '@app/users/entities/user.entity';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(User.name)
-    private readonly userModel: Model<UserDocument>,
+    @InjectRepository(User)
+    private readonly usersRepository: Repository<User>,
   ) {}
 
   async findAll(): Promise<User[]> {
-    return this.userModel.find();
+    return this.usersRepository.find();
   }
 
   async getById(id: string): Promise<User> {
-    return this.userModel.findOne({ where: { id } });
+    return this.usersRepository.findOne({ where: { id } });
   }
 }

@@ -1,19 +1,16 @@
-import {
-  UserWorkout,
-  UserWorkoutDocument,
-} from '@app/user-workouts/entities/user-workout.entity';
+import { UserWorkout } from '@app/user-workouts/entities/user-workout.entity';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserWorkoutsService {
   constructor(
-    @InjectModel(UserWorkout.name)
-    private readonly userWorkoutModel: Model<UserWorkoutDocument>,
+    @InjectRepository(UserWorkout)
+    private readonly userWorkoutsRepository: Repository<UserWorkout>,
   ) {}
 
   async findAll(): Promise<UserWorkout[]> {
-    return this.userWorkoutModel.find();
+    return this.userWorkoutsRepository.find();
   }
 }

@@ -1,10 +1,10 @@
 import { AllExceptionsFilter } from '@app/all-exceptions.filter';
 import configuration, {
   CacheConfig,
-  MongoDbConfig,
+  DbConfig,
   StripeConfig,
   cache_config,
-  mongodb_config,
+  db_config,
 } from '@app/app.config';
 import { AuthModule } from '@app/auth/auth.module';
 import { JwtGuard } from '@app/auth/guards/jwt.guard';
@@ -28,7 +28,7 @@ import {
 } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD, APP_PIPE } from '@nestjs/core';
-import { MongooseModule } from '@nestjs/mongoose';
+import { TypeOrmModule } from '@nestjs/typeorm';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -60,21 +60,27 @@ import { MongooseModule } from '@nestjs/mongoose';
         };
       },
     }),
-    MongooseModule.forRootAsync({
+    TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-        const mongoDbConfig = configService.get<MongoDbConfig>(mongodb_config);
+        const dbConfig = configService.get<DbConfig>(db_config);
         return {
-          uri: mongoDbConfig.uri,
-          user: mongoDbConfig.username,
-          pass: mongoDbConfig.password,
-          dbName: mongoDbConfig.dbName,
-          appName: 'tempered-strength-api',
-          retryWrites: true,
+          type: 'mysql',
+          host: dbConfig.host,
+          username: dbConfig.username,
+          password: dbConfig.password,
+          database: dbConfig.database,
+          synchronize: true,
+          autoLoadEntities: true,
+          entities: [__dirname + '/**/*.entity{.ts,.js}'],
+          extra: {
+            ssl: {
+              rejectUnauthorized: false,
+            },
+          },
         };
       },
     }),
-
     AuthModule,
     WebhooksModule,
     UsersModule,

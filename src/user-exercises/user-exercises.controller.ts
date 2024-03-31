@@ -9,6 +9,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Request,
@@ -42,7 +43,7 @@ export class UserExercisesController {
   @Patch(':id')
   async updateUserExercise(
     @Request() { user: { id: userId } }: { user: LocalUser },
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() userExercise: UpdateUserExerciseDto,
   ) {
     return this.userExercisesService.updateUserExercise(
@@ -55,7 +56,7 @@ export class UserExercisesController {
   @Delete(':id')
   async deleteUserExercise(
     @Request() { user: { id: userId } }: { user: LocalUser },
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
   ) {
     return this.userExercisesService.deleteUserExercise(userId, id);
   }
