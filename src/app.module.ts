@@ -82,15 +82,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         };
       },
     }),
-    AuthModule,
-    WebhooksModule,
-    UsersModule,
+    // AuthModule,
+    // WebhooksModule,
+    // UsersModule,
     ExercisesModule,
-    TeamsModule,
+    // TeamsModule,
     UserExercisesModule,
-    UserTeamsModule,
-    UserWorkoutsModule,
-    WorkoutsModule,
+    // UserTeamsModule,
+    // UserWorkoutsModule,
+    // WorkoutsModule,
   ],
   providers: [
     {
