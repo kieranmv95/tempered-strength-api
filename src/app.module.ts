@@ -6,18 +6,8 @@ import configuration, {
   cache_config,
   db_config,
 } from '@app/app.config';
-import { AuthModule } from '@app/auth/auth.module';
-import { JwtGuard } from '@app/auth/guards/jwt.guard';
 import { ExercisesModule } from '@app/exercises/exercises.module';
 import { AppLoggerMiddleware } from '@app/middlewares/app-logger.middleware';
-import { StripeModule } from '@app/stripe/stripe.module';
-import { TeamsModule } from '@app/teams/teams.module';
-import { UserExercisesModule } from '@app/user-exercises/user-exercises.module';
-import { UserTeamsModule } from '@app/user-teams/user-teams.module';
-import { UserWorkoutsModule } from '@app/user-workouts/user-workouts.module';
-import { UsersModule } from '@app/users/users.module';
-import { WebhooksModule } from '@app/webhooks/webhooks.module';
-import { WorkoutsModule } from '@app/workouts/workouts.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import {
   MiddlewareConsumer,
@@ -48,18 +38,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       },
       isGlobal: true,
     }),
-    StripeModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-        const { secretKey } = configService.get<StripeConfig>('stripe');
-        return {
-          secretKey,
-          stripeConfig: {
-            apiVersion: '2023-10-16',
-          },
-        };
-      },
-    }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
@@ -81,15 +59,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         };
       },
     }),
-    AuthModule,
-    WebhooksModule,
-    UsersModule,
     ExercisesModule,
-    TeamsModule,
-    UserExercisesModule,
-    UserTeamsModule,
-    UserWorkoutsModule,
-    WorkoutsModule,
   ],
   providers: [
     {
@@ -105,10 +75,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     {
       provide: APP_FILTER,
       useValue: new AllExceptionsFilter(),
-    },
-    {
-      provide: APP_GUARD,
-      useClass: JwtGuard,
     },
   ],
 })
