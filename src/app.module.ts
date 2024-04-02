@@ -70,14 +70,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
           username: dbConfig.username,
           password: dbConfig.password,
           database: dbConfig.database,
+          port: dbConfig.port,
           synchronize: true,
-          autoLoadEntities: true,
-          entities: [__dirname + '/**/*.entity{.ts,.js}'],
-          extra: {
-            ssl: {
-              rejectUnauthorized: false,
-            },
-          },
+          // autoLoadEntities: true,
+          // entities: [__dirname + '/**/*.entity{.ts,.js}'],
         };
       },
     }),
